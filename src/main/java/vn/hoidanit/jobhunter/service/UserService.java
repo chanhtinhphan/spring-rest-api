@@ -14,6 +14,10 @@ public class UserService {
     }
 
     public User handleCreateuser(User user) {
-        return userRepository.save(user);
+        return this.userRepository.save(user);
+    }
+
+    public void handeDeleteUser(Long id) {
+        this.userRepository.deleteById(id);
     }
 }
