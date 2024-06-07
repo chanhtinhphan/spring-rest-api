@@ -36,11 +36,22 @@ public class UserService {
         return this.userRepository.findAll();
     }
 
+    // public User handleUpdateUser(User user) {
+    // if (this.userRepository.findAll().contains(user)) {
+    // return this.userRepository.save(user);
+    // }
+    // return null;
+    // }
+
     public User handleUpdateUser(User user) {
-        if (this.userRepository.findAll().contains(user)) {
-            return this.userRepository.save(user);
+        User currentUser = this.handleGetUserById(user.getId());
+        if (currentUser != null) {
+            currentUser.setEmail(user.getEmail());
+            currentUser.setName(user.getName());
+            currentUser.setPassword(user.getPassword());
+            return this.userRepository.save(currentUser);
         }
-        return null;
+        return currentUser;
     }
 
 }

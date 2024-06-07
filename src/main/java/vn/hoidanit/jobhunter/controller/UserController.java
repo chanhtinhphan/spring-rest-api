@@ -40,7 +40,7 @@ public class UserController {
         return this.userService.handleGetUserById(id);
     }
 
-    @GetMapping()
+    @GetMapping
     public List<User> getAll() {
         return this.userService.handeGetAllUser();
     }
