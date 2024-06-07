@@ -35,4 +35,12 @@ public class UserService {
     public List<User> handeGetAllUser() {
         return this.userRepository.findAll();
     }
+
+    public User handleUpdateUser(User user) {
+        if (this.userRepository.findAll().contains(user)) {
+            return this.userRepository.save(user);
+        }
+        return null;
+    }
+
 }
