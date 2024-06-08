@@ -36,6 +36,8 @@ public class UserService {
         return this.userRepository.findAll();
     }
 
+    // override all field
+
     // public User handleUpdateUser(User user) {
     // if (this.userRepository.findAll().contains(user)) {
     // return this.userRepository.save(user);

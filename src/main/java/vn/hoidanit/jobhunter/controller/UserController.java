@@ -7,6 +7,8 @@ import vn.hoidanit.jobhunter.domain.User;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,29 +27,33 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
-        return this.userService.handleCreateuser(user);
+    public ResponseEntity<User> create(@RequestBody User user) {
+        User newUser = this.userService.handleCreateuser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") Long id) {
+    public ResponseEntity<String> delete(@PathVariable("id") Long id) {
         this.userService.handeDeleteUser(id);
-        return "deleted";
+        return ResponseEntity.status(HttpStatus.OK).body("deleted");
     }
 
     @GetMapping("/{id}")
-    public User get(@PathVariable("id") Long id) {
-        return this.userService.handleGetUserById(id);
+    public ResponseEntity<User> get(@PathVariable("id") Long id) {
+        User user = this.userService.handleGetUserById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     @GetMapping
-    public List<User> getAll() {
-        return this.userService.handeGetAllUser();
+    public ResponseEntity<List<User>> getAll() {
+        List<User> listUser = this.userService.handeGetAllUser();
+        return ResponseEntity.status(HttpStatus.OK).body(listUser);
     }
 
     @PutMapping
-    public User update(@RequestBody User user) {
-        return this.userService.handleUpdateUser(user);
+    public ResponseEntity<User> update(@RequestBody User user) {
+        User putUser = this.userService.handleUpdateUser(user);
+        return ResponseEntity.ok(putUser);
     }
 
 }
