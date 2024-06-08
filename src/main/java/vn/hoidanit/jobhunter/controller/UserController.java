@@ -3,6 +3,7 @@ package vn.hoidanit.jobhunter.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.hoidanit.jobhunter.service.UserService;
+import vn.hoidanit.jobhunter.service.error.IdInvalidException;
 import vn.hoidanit.jobhunter.domain.User;
 
 import java.util.List;
@@ -39,8 +40,10 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> get(@PathVariable("id") Long id) {
+    public ResponseEntity<User> get(@PathVariable("id") Long id) throws IdInvalidException {
         User user = this.userService.handleGetUserById(id);
+        if (!this.userService.handeGetAllUser().contains(user))
+            throw new IdInvalidException("not exist");
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
@@ -55,5 +58,4 @@ public class UserController {
         User putUser = this.userService.handleUpdateUser(user);
         return ResponseEntity.ok(putUser);
     }
-
 }
