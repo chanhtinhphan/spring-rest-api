@@ -5,12 +5,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpResponse;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import jakarta.servlet.http.HttpServletResponse;
+import vn.hoidanit.jobhunter.domain.RestResponse;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class FormatRestResponse implements ResponseBodyAdvice<Object> {
 
     @Override
@@ -28,7 +29,18 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
             ServerHttpResponse response) {
         HttpServletResponse servletResponse = ((ServletServerHttpResponse) response).getServletResponse();
         int status = servletResponse.getStatus();
-        return body;
+
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(status);
+
+        if (status >= 400) {
+            return body;
+        } else {
+            res.setData(body);
+            res.setMessage("Call api success");
+        }
+
+        return res;
     }
 
 }
