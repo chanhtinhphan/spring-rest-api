@@ -1,6 +1,5 @@
 package vn.hoidanit.jobhunter.service;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,11 +11,11 @@ import org.springframework.stereotype.Component;
 import vn.hoidanit.jobhunter.domain.User;
 
 @Component("userDetailsService")
-public class UserDetailCustom implements UserDetailsService {
+public class UserDetailsCustom implements UserDetailsService {
 
     private final UserService userService;
 
-    public UserDetailCustom(UserService userService) {
+    public UserDetailsCustom(UserService userService) {
         this.userService = userService;
     }
 
@@ -24,6 +23,9 @@ public class UserDetailCustom implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         User user = this.userService.handleGetUserByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("Invalid username/password");
+        }
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
