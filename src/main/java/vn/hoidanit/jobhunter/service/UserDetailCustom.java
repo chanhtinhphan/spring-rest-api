@@ -29,7 +29,6 @@ public class UserDetailCustom implements UserDetailsService {
                 user.getEmail(),
                 user.getPassword(),
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
-
     }
 
 }
