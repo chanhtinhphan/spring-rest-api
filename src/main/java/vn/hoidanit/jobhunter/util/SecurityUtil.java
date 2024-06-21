@@ -32,13 +32,12 @@ public class SecurityUtil {
         Instant now = Instant.now();
         Instant validity = now.plus(this.jwtKeyExpiration, ChronoUnit.SECONDS);
 
-        // @formatter:off
         JwtClaimsSet claims = JwtClaimsSet.builder()
-            .issuedAt(now)
-            .expiresAt(validity)
-            .subject(authentication.getName())
-            .claim("hoidanit", authentication)
-            .build();
+                .issuedAt(now)
+                .expiresAt(validity)
+                .subject(authentication.getName())
+                .claim("hoidanit", authentication)
+                .build();
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
     }
