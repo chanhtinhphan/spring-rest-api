@@ -39,7 +39,6 @@ public class SecurityUtil {
                 .claim("hoidanit", authentication)
                 .build();
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
-        System.out.println("hello world");
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
     }
 }
