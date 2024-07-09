@@ -22,12 +22,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     private final ObjectMapper mapper;
 
     public CustomAuthenticationEntryPoint(ObjectMapper mapper) {
-        this.mapper = mapper;
+        this.mapper=mapper;
     }
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException authException) throws IOException, ServletException {
+                         AuthenticationException authException) throws IOException, ServletException {
         this.delegate.commence(request, response, authException);
         response.setContentType("application/json;charset=UTF-8");
 
