@@ -27,16 +27,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDto) {
-
-        // Nạp username/pasword vào Security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginDto.getUsername(), loginDto.getPassword());
-
-        // Xác thực người dùng => cần override loadUserByUserName()
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        // Create a token
         String access_token = this.securityUtil.createToken(authentication);
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
         ResLoginDTO res = new ResLoginDTO();
         res.setAccessToken(access_token);
