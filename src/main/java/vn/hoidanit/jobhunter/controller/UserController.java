@@ -51,8 +51,8 @@ public class UserController {
             @RequestParam("current") Optional<String> currentOptional,
             @RequestParam("pageSize") Optional<String> pageSizeOptional
     ) {
-        String sCurrent = currentOptional.isPresent() ? currentOptional.get() : "";
-        String sPageSize = pageSizeOptional.isPresent() ? pageSizeOptional.get() : "";
+        String sCurrent = currentOptional.orElse("");
+        String sPageSize = pageSizeOptional.orElse("");
 
         int currentPage = Integer.parseInt(sCurrent) - 1;
         int pageSize = Integer.parseInt(sPageSize);

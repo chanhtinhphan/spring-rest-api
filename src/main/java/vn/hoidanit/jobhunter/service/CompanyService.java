@@ -24,7 +24,7 @@ public class CompanyService {
         return this.companyRepository.save(company);
     }
 
-    public ResultPaginationDTO hanldeGetAllCompany(Pageable pageable) {
+    public ResultPaginationDTO handleGetAllCompany(Pageable pageable) {
         Page<Company> pageCompany = this.companyRepository.findAll(pageable);
         ResultPaginationDTO result = new ResultPaginationDTO();
         Meta meta = new Meta();

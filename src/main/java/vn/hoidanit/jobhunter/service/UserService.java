@@ -15,7 +15,7 @@ import vn.hoidanit.jobhunter.repository.UserRepository;
 
 @Service
 public class UserService {
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -31,9 +31,7 @@ public class UserService {
 
     public User handleGetUserById(Long id) {
         Optional<User> optionalUser = this.userRepository.findById(id);
-        if (optionalUser.isPresent())
-            return optionalUser.get();
-        return null;
+        return optionalUser.orElse(null);
     }
 
     public ResultPaginationDTO handeGetAllUser(Pageable pageable) {
@@ -51,15 +49,6 @@ public class UserService {
         return result;
     }
 
-    // override all field
-
-    // public User handleUpdateUser(User user) {
-    // if (this.userRepository.findAll().contains(user)) {
-    // return this.userRepository.save(user);
-    // }
-    // return null;
-    // }
-
     public User handleUpdateUser(User user) {
         User currentUser = this.handleGetUserById(user.getId());
         if (currentUser != null) {
@@ -68,7 +57,7 @@ public class UserService {
             currentUser.setPassword(user.getPassword());
             return this.userRepository.save(currentUser);
         }
-        return currentUser;
+        return null;
     }
 
     public User handleGetUserByUsername(String username) {
