@@ -1,8 +1,12 @@
 package vn.hoidanit.jobhunter.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.hoidanit.jobhunter.domain.Company;
 import vn.hoidanit.jobhunter.domain.User;
+import vn.hoidanit.jobhunter.domain.dto.Meta;
+import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.CompanyRepository;
 
 import java.util.List;
@@ -19,8 +23,20 @@ public class CompanyService {
     public Company handleCreateCompany(Company company) {
         return this.companyRepository.save(company);
     }
-    public List<Company> hanldeGetAllCompany(){
-        return this.companyRepository.findAll();
+
+    public ResultPaginationDTO hanldeGetAllCompany(Pageable pageable) {
+        Page<Company> pageCompany = this.companyRepository.findAll(pageable);
+        ResultPaginationDTO result = new ResultPaginationDTO();
+        Meta meta = new Meta();
+
+        meta.setPage(pageCompany.getNumber()+1);
+        meta.setPageSize(pageCompany.getSize());
+        meta.setPages(pageCompany.getTotalPages());
+        meta.setTotal(pageCompany.getTotalElements());
+
+        result.setMeta(meta);
+        result.setResult(pageCompany.getContent());
+        return result;
     }
 
     public Company handleUpdateCompany(Company company) {
@@ -35,7 +51,8 @@ public class CompanyService {
         }
         return null;
     }
-    public void handleDeleteCompany(Long id){
-       this.companyRepository.deleteById(id);
+
+    public void handleDeleteCompany(Long id) {
+        this.companyRepository.deleteById(id);
     }
 }

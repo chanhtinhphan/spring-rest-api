@@ -1,5 +1,7 @@
 package vn.hoidanit.jobhunter.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import vn.hoidanit.jobhunter.domain.User;
 
 import java.util.List;
@@ -7,6 +9,8 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import vn.hoidanit.jobhunter.domain.dto.Meta;
+import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.UserRepository;
 
 @Service
@@ -32,8 +36,19 @@ public class UserService {
         return null;
     }
 
-    public List<User> handeGetAllUser() {
-        return this.userRepository.findAll();
+    public ResultPaginationDTO handeGetAllUser(Pageable pageable) {
+        Page<User> pageUser = this.userRepository.findAll(pageable);
+        ResultPaginationDTO result = new ResultPaginationDTO();
+        Meta meta = new Meta();
+
+        meta.setPage(pageUser.getNumber()+1);
+        meta.setPageSize(pageUser.getSize());
+        meta.setPages(pageUser.getTotalPages());
+        meta.setTotal(pageUser.getTotalElements());
+
+        result.setMeta(meta);
+        result.setResult(pageUser.getContent());
+        return result;
     }
 
     // override all field

@@ -1,23 +1,20 @@
 package vn.hoidanit.jobhunter.controller;
 
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.*;
 
+import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.error.IdInvalidException;
 import vn.hoidanit.jobhunter.domain.User;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
 @RequestMapping("/users")
@@ -46,15 +43,22 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<User> get(@PathVariable("id") Long id) throws IdInvalidException {
-        User user = this.userService.handleGetUserById(id);
-        if (!this.userService.handeGetAllUser().contains(user))
-            throw new IdInvalidException("not exist");
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+        return ResponseEntity.status(HttpStatus.OK).body(this.userService.handleGetUserById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAll() {
-        List<User> listUser = this.userService.handeGetAllUser();
+    public ResponseEntity<ResultPaginationDTO> getAll(
+            @RequestParam("current") Optional<String> currentOptional,
+            @RequestParam("pageSize") Optional<String> pageSizeOptional
+    ) {
+        String sCurrent = currentOptional.isPresent() ? currentOptional.get() : "";
+        String sPageSize = pageSizeOptional.isPresent() ? pageSizeOptional.get() : "";
+
+        int currentPage = Integer.parseInt(sCurrent) - 1;
+        int pageSize = Integer.parseInt(sPageSize);
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
+
+        ResultPaginationDTO listUser = this.userService.handeGetAllUser(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(listUser);
     }
 
