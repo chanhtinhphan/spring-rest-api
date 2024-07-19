@@ -1,5 +1,6 @@
 package vn.hoidanit.jobhunter.repository;
 
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import vn.hoidanit.jobhunter.domain.User;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     User save(User user);
 
     Optional<User> findById(Long id);
@@ -18,4 +19,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByEmail(String email);
 
     void deleteById(Long id);
+
 }

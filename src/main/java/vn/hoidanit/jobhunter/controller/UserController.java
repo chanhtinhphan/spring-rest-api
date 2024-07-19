@@ -1,11 +1,14 @@
 package vn.hoidanit.jobhunter.controller;
 
+import com.turkraft.springfilter.boot.Filter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
 import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.UserService;
+import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 import vn.hoidanit.jobhunter.util.error.IdInvalidException;
 import vn.hoidanit.jobhunter.domain.User;
 
@@ -16,8 +19,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.swing.text.html.HTMLDocument;
+
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -47,18 +52,20 @@ public class UserController {
     }
 
     @GetMapping
+    @ApiMessage("fetch all users")
     public ResponseEntity<ResultPaginationDTO> getAll(
-            @RequestParam("current") Optional<String> currentOptional,
-            @RequestParam("pageSize") Optional<String> pageSizeOptional
+            @Filter Specification<User> specification,
+            Pageable pageable
+//            @RequestParam("current") Optional<String> currentOptional,
+//            @RequestParam("pageSize") Optional<String> pageSizeOptional
     ) {
-        String sCurrent = currentOptional.orElse("");
-        String sPageSize = pageSizeOptional.orElse("");
-
-        int currentPage = Integer.parseInt(sCurrent) - 1;
-        int pageSize = Integer.parseInt(sPageSize);
-        Pageable pageable = PageRequest.of(currentPage, pageSize);
-
-        ResultPaginationDTO listUser = this.userService.handeGetAllUser(pageable);
+//        String sCurrent = currentOptional.orElse("");
+//        String sPageSize = pageSizeOptional.orElse("");
+//
+//        int currentPage = Integer.parseInt(sCurrent) - 1;
+//        int pageSize = Integer.parseInt(sPageSize);
+//        Pageable pageable = PageRequest.of(currentPage, pageSize);
+        ResultPaginationDTO listUser = this.userService.handeGetAllUser(specification,pageable);
         return ResponseEntity.status(HttpStatus.OK).body(listUser);
     }
 

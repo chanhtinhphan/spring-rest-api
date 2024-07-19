@@ -1,8 +1,10 @@
 package vn.hoidanit.jobhunter.controller;
 
+import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -11,12 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import vn.hoidanit.jobhunter.domain.Company;
 import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.CompanyService;
+import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 
 import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/companies")
+@RequestMapping("/api/v1/companies")
 public class CompanyController {
     private final CompanyService companyService;
 
@@ -25,16 +28,14 @@ public class CompanyController {
     }
 
     @GetMapping
+    @ApiMessage("fetch companies")
     public ResponseEntity<ResultPaginationDTO> get(
-            @RequestParam("current") Optional<String> currentOptional,
-            @RequestParam("pageSize") Optional<String> pageSizeOptional
+            @Filter Specification<Company> specification,
+            //Note : không có cái Filter thì sort trên url vẫn tự map vào Pageable -> cuối khóa check lại
+            Pageable pageable
     ) {
-        String sCurrent = currentOptional.orElse("");
-        String sPageSize = pageSizeOptional.orElse("");
-        int page = Integer.parseInt(sCurrent)-1;
-        int size =Integer.parseInt(sPageSize);
-        Pageable pageable = PageRequest.of(page,size);
-        return ResponseEntity.status(HttpStatus.OK).body(this.companyService.handleGetAllCompany(pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(
+                this.companyService.handleGetAllCompany(specification, pageable));
     }
 
     @PostMapping
