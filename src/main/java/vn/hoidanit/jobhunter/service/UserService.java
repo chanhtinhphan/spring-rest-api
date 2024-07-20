@@ -5,14 +5,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import vn.hoidanit.jobhunter.domain.User;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 
-import vn.hoidanit.jobhunter.domain.dto.Meta;
-import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.dto.*;
 import vn.hoidanit.jobhunter.repository.UserRepository;
+import vn.hoidanit.jobhunter.util.error.IdNotFoundException;
+import vn.hoidanit.jobhunter.util.error.UserExistedException;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -22,21 +25,44 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User handleCreateuser(User user) {
-        return this.userRepository.save(user);
+    public ResCreateUserDTO handleCreateuser(User user) throws UserExistedException {
+        if (this.userRepository.findByEmail(user.getEmail()) != null) {
+            throw new UserExistedException("User has exsisted in db");
+        }
+        User savedUser = this.userRepository.save(user);
+        ResCreateUserDTO res = new ResCreateUserDTO();
+        res.setId(savedUser.getId());
+        res.setName(savedUser.getName());
+        res.setAge(savedUser.getAge());
+        res.setAddress(savedUser.getAddress());
+        res.setGender(savedUser.getGender());
+        res.setEmail(savedUser.getEmail());
+        res.setCreatedAt(savedUser.getCreatedAt());
+        return res;
     }
 
-    public void handeDeleteUser(Long id) {
+    public void handeDeleteUser(Long id) throws IdNotFoundException {
+        this.userRepository.findById(id).orElseThrow(() -> new IdNotFoundException("Id not found"));
         this.userRepository.deleteById(id);
     }
 
-    public User handleGetUserById(Long id) {
-        Optional<User> optionalUser = this.userRepository.findById(id);
-        return optionalUser.orElse(null);
+    public ResFetchUserDTO handleGetUserById(Long id) throws IdNotFoundException {
+        User user = this.userRepository.findById(id).
+                orElseThrow(() -> new IdNotFoundException("Id not found"));
+        ResFetchUserDTO res = new ResFetchUserDTO();
+        res.setId(user.getId());
+        res.setEmail(user.getEmail());
+        res.setName(user.getName());
+        res.setGender(user.getGender());
+        res.setAddress(user.getAddress());
+        res.setAge(user.getAge());
+        res.setUpdatedAt(user.getUpdatedAt());
+        res.setCreatedAt(user.getCreatedAt());
+        return res;
     }
 
     public ResultPaginationDTO handeGetAllUser(Specification<User> specification, Pageable pageable) {
-        Page<User> pageUser = this.userRepository.findAll(specification,pageable);
+        Page<User> pageUser = this.userRepository.findAll(specification, pageable);
         ResultPaginationDTO result = new ResultPaginationDTO();
         Meta meta = new Meta();
 
@@ -47,19 +73,52 @@ public class UserService {
         meta.setTotal(pageUser.getTotalElements());
 
         result.setMeta(meta);
-        result.setResult(pageUser.getContent());
+
+
+        List<ResFetchUserDTO> listRes = pageUser.getContent().stream()
+                .map(user -> new ResFetchUserDTO(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.getAge(),
+                        user.getGender(),
+                        user.getAddress(),
+                        user.getCreatedAt(),
+                        user.getUpdatedAt()
+                )).collect(Collectors.toList());
+//        for (User user : listUser) {
+//            ResFetchUserDTO res = new ResFetchUserDTO();
+//            res.setId(user.getId());
+//            res.setEmail(user.getEmail());
+//            res.setName(user.getName());
+//            res.setGender(user.getGender());
+//            res.setAddress(user.getAddress());
+//            res.setAge(user.getAge());
+//            res.setUpdatedAt(user.getUpdatedAt());
+//            res.setCreatedAt(user.getCreatedAt());
+//            listRes.add(res);
+//        }
+        result.setResult(listRes);
         return result;
     }
 
-    public User handleUpdateUser(User user) {
-        User currentUser = this.handleGetUserById(user.getId());
-        if (currentUser != null) {
-            currentUser.setEmail(user.getEmail());
-            currentUser.setName(user.getName());
-            currentUser.setPassword(user.getPassword());
-            return this.userRepository.save(currentUser);
-        }
-        return null;
+    public ResUpdateUserDTO handleUpdateUser(User user) throws IdNotFoundException {
+        User currentUser = this.userRepository.findById(user.getId()).
+                orElseThrow(() -> new IdNotFoundException("Id not found"));
+        currentUser.setName(user.getName());
+        currentUser.setGender(user.getGender());
+        currentUser.setAddress(user.getAddress());
+        currentUser.setAge(user.getAge());
+        User updatedUser = this.userRepository.save(currentUser);
+        ResUpdateUserDTO res = new ResUpdateUserDTO();
+        res.setId(updatedUser.getId());
+        res.setName(updatedUser.getName());
+        res.setGender(updatedUser.getGender());
+        res.setAddress(updatedUser.getAddress());
+        res.setAge(updatedUser.getAge());
+        res.setUpdatedAt(updatedUser.getUpdatedAt());
+        return res;
+
     }
 
     public User handleGetUserByUsername(String username) {

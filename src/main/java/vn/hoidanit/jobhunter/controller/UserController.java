@@ -1,25 +1,24 @@
 package vn.hoidanit.jobhunter.controller;
 
 import com.turkraft.springfilter.boot.Filter;
-import org.springframework.data.domain.PageRequest;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
+import vn.hoidanit.jobhunter.domain.dto.ResCreateUserDTO;
+import vn.hoidanit.jobhunter.domain.dto.ResFetchUserDTO;
+import vn.hoidanit.jobhunter.domain.dto.ResUpdateUserDTO;
 import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
-import vn.hoidanit.jobhunter.util.error.IdInvalidException;
+import vn.hoidanit.jobhunter.util.error.IdNotFoundException;
+import vn.hoidanit.jobhunter.util.error.UserExistedException;
 import vn.hoidanit.jobhunter.domain.User;
-
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import javax.swing.text.html.HTMLDocument;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -33,21 +32,24 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody User user) {
+    @ApiMessage("Create a new user")
+    public ResponseEntity<ResCreateUserDTO> create(@RequestBody @Valid User user) throws UserExistedException {
         String hashPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashPassword);
-        User newUser = this.userService.handleCreateuser(user);
+        ResCreateUserDTO newUser = this.userService.handleCreateuser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") Long id) {
+    @ApiMessage("Delete a user")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws IdNotFoundException {
         this.userService.handeDeleteUser(id);
-        return ResponseEntity.status(HttpStatus.OK).body("deleted");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> get(@PathVariable("id") Long id) throws IdInvalidException {
+    @ApiMessage("Fetch user by id")
+    public ResponseEntity<ResFetchUserDTO> get(@PathVariable("id") Long id) throws IdNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(this.userService.handleGetUserById(id));
     }
 
@@ -65,13 +67,14 @@ public class UserController {
 //        int currentPage = Integer.parseInt(sCurrent) - 1;
 //        int pageSize = Integer.parseInt(sPageSize);
 //        Pageable pageable = PageRequest.of(currentPage, pageSize);
-        ResultPaginationDTO listUser = this.userService.handeGetAllUser(specification,pageable);
+        ResultPaginationDTO listUser = this.userService.handeGetAllUser(specification, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(listUser);
     }
 
     @PutMapping
-    public ResponseEntity<User> update(@RequestBody User user) {
-        User putUser = this.userService.handleUpdateUser(user);
+    @ApiMessage("update user")
+    public ResponseEntity<ResUpdateUserDTO> update(@RequestBody User user) throws IdNotFoundException {
+        ResUpdateUserDTO putUser = this.userService.handleUpdateUser(user);
         return ResponseEntity.ok(putUser);
     }
 }

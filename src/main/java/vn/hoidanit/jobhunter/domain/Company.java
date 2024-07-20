@@ -33,13 +33,13 @@ public class Company {
     public void handleBeforeCreate() {
         this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true ?
                 SecurityUtil.getCurrentUserLogin().get() : "";
-        this.setCreatedAt(Instant.now());
+        this.createdAt = Instant.now();
     }
 
     @PreUpdate
     public void handlebeforeUpdate() {
-        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true ?
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true ?
                 SecurityUtil.getCurrentUserLogin().get() : "";
-        this.setCreatedAt(Instant.now());
+        this.updatedAt = Instant.now();
     }
 }

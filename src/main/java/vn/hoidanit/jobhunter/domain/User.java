@@ -1,76 +1,49 @@
 package vn.hoidanit.jobhunter.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+import vn.hoidanit.jobhunter.util.SecurityUtil;
+import vn.hoidanit.jobhunter.util.constant.GenderEnum;
+
+import java.time.Instant;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @NotBlank(message = "email can't be emty")
     private String email;
+    @NotBlank(message = "password can't be emty")
     private String password;
+    private int age;
+    @Enumerated(EnumType.STRING)
+    private GenderEnum gender;
+    private String address;
+    private String refreshToken;
+    private Instant createdAt;
+    private Instant updatedAt;
+    private String createdBy;
+    private String updatedBy;
 
-    public String getName() {
-        return name;
+
+    @PrePersist
+    public void handleBeforeCreate() {
+        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true ?
+                SecurityUtil.getCurrentUserLogin().get() : "";
+        this.createdAt = Instant.now();
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @PreUpdate
+    public void handlebeforeUpdate() {
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true ?
+                SecurityUtil.getCurrentUserLogin().get() : "";
+        this.updatedAt = Instant.now();
     }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        User other = (User) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        return true;
-    }
-
 }
