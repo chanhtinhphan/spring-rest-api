@@ -55,9 +55,9 @@ public class AuthController {
                     currentUserDB.getEmail(),
                     currentUserDB.getName()
             );
-            res.setUserLogin(userLogin);
+            res.setUser(userLogin);
         }
-        String access_token = this.securityUtil.createAccessToken(authentication.getName(), res.getUserLogin());
+        String access_token = this.securityUtil.createAccessToken(authentication.getName(), res.getUser());
         res.setAccessToken(access_token);
 
         String refresh_token = this.securityUtil.createRefreshToken(loginDto.getUsername(), res);
@@ -77,18 +77,19 @@ public class AuthController {
 
     @GetMapping("auth/account")
     @ApiMessage("fetch account")
-    public ResponseEntity<ResLoginDTO.UserLogin> getAccount() {
+    public ResponseEntity<ResLoginDTO.UserGetAccount> getAccount() {
         String email = SecurityUtil.getCurrentUserLogin().orElse("");
         User currentUserDB = this.userService.handleGetUserByUsername(email);
-        ResLoginDTO.UserLogin userLogin = null;
+        ResLoginDTO.UserGetAccount userGetAccount = null;
         if (currentUserDB != null) {
-            userLogin = new ResLoginDTO.UserLogin(
-                    currentUserDB.getId(),
-                    currentUserDB.getEmail(),
-                    currentUserDB.getName()
-            );
+            userGetAccount = new ResLoginDTO.UserGetAccount(
+                    new ResLoginDTO.UserLogin(
+                            currentUserDB.getId(),
+                            currentUserDB.getEmail(),
+                            currentUserDB.getName()
+                    ));
         }
-        return ResponseEntity.ok().body(userLogin);
+        return ResponseEntity.ok().body(userGetAccount);
     }
 
     @GetMapping("/auth/refresh")
@@ -111,9 +112,9 @@ public class AuthController {
                     currentUserDB.getEmail(),
                     currentUserDB.getName()
             );
-            res.setUserLogin(userLogin);
+            res.setUser(userLogin);
         }
-        String access_token = this.securityUtil.createAccessToken(email, res.getUserLogin());
+        String access_token = this.securityUtil.createAccessToken(email, res.getUser());
         res.setAccessToken(access_token);
 
         String new_refresh_token = this.securityUtil.createRefreshToken(email, res);
@@ -129,5 +130,28 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
                 .body(res);
+    }
+
+    @PostMapping("/auth/logout")
+    @ApiMessage("logout user")
+    public ResponseEntity<Void> logout(
+            @CookieValue(name = "refresh_token") String refreshToken
+    ) throws IdNotFoundException {
+        String email = SecurityUtil.getCurrentUserLogin().orElse(null);
+        if (email.equals(null)) {
+            throw new IdNotFoundException("User not exist");
+        }
+        this.userService.updateUserToken(null, email);
+
+        ResponseCookie deleteSpringCookie = ResponseCookie.from("refresh_token", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, deleteSpringCookie.toString())
+                .build();
     }
 }
