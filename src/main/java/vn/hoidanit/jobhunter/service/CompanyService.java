@@ -5,12 +5,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.hoidanit.jobhunter.domain.Company;
-import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.dto.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.CompanyRepository;
 import vn.hoidanit.jobhunter.repository.UserRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -58,7 +56,7 @@ public class CompanyService {
 
     public void handleDeleteCompany(Long id) {
         Company company = this.companyRepository.findById(id).orElse(null);
-        if(company!=null){
+        if (company != null) {
             company.getUsers().stream()
                     .forEach((user -> this.userRepository.deleteById(user.getId())));
         }

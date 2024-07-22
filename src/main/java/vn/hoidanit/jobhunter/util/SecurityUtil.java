@@ -82,7 +82,7 @@ public class SecurityUtil {
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(
                 getSecretKey()).macAlgorithm(SecurityUtil.JWT_ALGORITHM).build();
         try {
-           return jwtDecoder.decode(token);
+            return jwtDecoder.decode(token);
         } catch (Exception e) {
             System.out.println(">>> Refresh Token error: " + e.getMessage());
             throw e;
@@ -129,10 +129,12 @@ public class SecurityUtil {
      *
      * @return true if the user is authenticated, false otherwise.
      */
-//    public static boolean isAuthenticated() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        return authentication != null && getAuthorities(authentication).noneMatch(AuthoritiesConstants.ANONYMOUS::equals);
-//    }
+    // public static boolean isAuthenticated() {
+    // Authentication authentication =
+    // SecurityContextHolder.getContext().getAuthentication();
+    // return authentication != null &&
+    // getAuthorities(authentication).noneMatch(AuthoritiesConstants.ANONYMOUS::equals);
+    // }
 
     /**
      * Checks if the current user has any of the authorities.
@@ -140,22 +142,26 @@ public class SecurityUtil {
      * @param authorities the authorities to check.
      * @return true if the current user has any of the authorities, false otherwise.
      */
-//    public static boolean hasCurrentUserAnyOfAuthorities(String... authorities) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        return (
-//                authentication != null && getAuthorities(authentication).anyMatch(authority -> Arrays.asList(authorities).contains(authority))
-//        );
-//    }
+    // public static boolean hasCurrentUserAnyOfAuthorities(String... authorities) {
+    // Authentication authentication =
+    // SecurityContextHolder.getContext().getAuthentication();
+    // return (
+    // authentication != null && getAuthorities(authentication).anyMatch(authority
+    // -> Arrays.asList(authorities).contains(authority))
+    // );
+    // }
 
     /**
      * Checks if the current user has none of the authorities.
      *
      * @param authorities the authorities to check.
-     * @return true if the current user has none of the authorities, false otherwise.
+     * @return true if the current user has none of the authorities, false
+     *         otherwise.
      */
-//    public static boolean hasCurrentUserNoneOfAuthorities(String... authorities) {
-//        return !hasCurrentUserAnyOfAuthorities(authorities);
-//    }
+    // public static boolean hasCurrentUserNoneOfAuthorities(String... authorities)
+    // {
+    // return !hasCurrentUserAnyOfAuthorities(authorities);
+    // }
 
     /**
      * Checks if the current user has a specific authority.
@@ -163,12 +169,13 @@ public class SecurityUtil {
      * @param authority the authority to check.
      * @return true if the current user has the authority, false otherwise.
      */
-//    public static boolean hasCurrentUserThisAuthority(String authority) {
-//        return hasCurrentUserAnyOfAuthorities(authority);
-//    }
-//
-//    private static Stream<String> getAuthorities(Authentication authentication) {
-//        return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority);
-//    }
+    // public static boolean hasCurrentUserThisAuthority(String authority) {
+    // return hasCurrentUserAnyOfAuthorities(authority);
+    // }
+    //
+    // private static Stream<String> getAuthorities(Authentication authentication) {
+    // return
+    // authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority);
+    // }
 
 }

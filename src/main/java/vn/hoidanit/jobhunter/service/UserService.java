@@ -3,7 +3,6 @@ package vn.hoidanit.jobhunter.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import vn.hoidanit.jobhunter.domain.Company;
 import vn.hoidanit.jobhunter.domain.User;
 
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ import vn.hoidanit.jobhunter.repository.UserRepository;
 import vn.hoidanit.jobhunter.util.error.IdNotFoundException;
 import vn.hoidanit.jobhunter.util.error.UserExistedException;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,8 +62,7 @@ public class UserService {
     }
 
     public ResFetchUserDTO handleGetUserById(Long id) throws IdNotFoundException {
-        User user = this.userRepository.findById(id).
-                orElseThrow(() -> new IdNotFoundException("Id not found"));
+        User user = this.userRepository.findById(id).orElseThrow(() -> new IdNotFoundException("Id not found"));
         ResFetchUserDTO res = new ResFetchUserDTO();
         res.setId(user.getId());
         res.setEmail(user.getEmail());
@@ -97,7 +94,6 @@ public class UserService {
 
         result.setMeta(meta);
 
-
         List<ResFetchUserDTO> listRes = pageUser.getContent().stream()
                 .map(user -> new ResFetchUserDTO(
                         user.getId(),
@@ -110,32 +106,31 @@ public class UserService {
                         user.getUpdatedAt(),
                         new ResCreateUserDTO.Company(
                                 user.getCompany() != null ? user.getCompany().getId() : 0,
-                                user.getCompany() != null ? user.getCompany().getName() : null
-                        )
-                )).collect(Collectors.toList());
+                                user.getCompany() != null ? user.getCompany().getName() : null)))
+                .collect(Collectors.toList());
 
-//        List<ResFetchUserDTO> listRes = new LinkedList<>();
-//        List<User> listUser = pageUser.getContent();
-//        for (User user : listUser) {
-//            ResFetchUserDTO res = new ResFetchUserDTO();
-//            res.setId(user.getId());
-//            res.setEmail(user.getEmail());
-//            res.setName(user.getName());
-//            res.setGender(user.getGender());
-//            res.setAddress(user.getAddress());
-//            res.setAge(user.getAge());
-//            res.setUpdatedAt(user.getUpdatedAt());
-//            res.setCreatedAt(user.getCreatedAt());
-//            if (user.getCompany() != null) {
-//                res.setCompany(
-//                        new ResCreateUserDTO.Company(
-//                                user.getCompany().getId(),
-//                                user.getCompany().getName()
-//                        )
-//                );
-//            }
-//            listRes.add(res);
-//        }
+        // List<ResFetchUserDTO> listRes = new LinkedList<>();
+        // List<User> listUser = pageUser.getContent();
+        // for (User user : listUser) {
+        // ResFetchUserDTO res = new ResFetchUserDTO();
+        // res.setId(user.getId());
+        // res.setEmail(user.getEmail());
+        // res.setName(user.getName());
+        // res.setGender(user.getGender());
+        // res.setAddress(user.getAddress());
+        // res.setAge(user.getAge());
+        // res.setUpdatedAt(user.getUpdatedAt());
+        // res.setCreatedAt(user.getCreatedAt());
+        // if (user.getCompany() != null) {
+        // res.setCompany(
+        // new ResCreateUserDTO.Company(
+        // user.getCompany().getId(),
+        // user.getCompany().getName()
+        // )
+        // );
+        // }
+        // listRes.add(res);
+        // }
         result.setResult(listRes);
         return result;
     }
@@ -145,8 +140,8 @@ public class UserService {
     }
 
     public ResUpdateUserDTO handleUpdateUser(User user) throws IdNotFoundException {
-        User currentUser = this.userRepository.findById(user.getId()).
-                orElseThrow(() -> new IdNotFoundException("Id not found"));
+        User currentUser = this.userRepository.findById(user.getId())
+                .orElseThrow(() -> new IdNotFoundException("Id not found"));
         currentUser.setName(user.getName());
         currentUser.setGender(user.getGender());
         currentUser.setAddress(user.getAddress());
