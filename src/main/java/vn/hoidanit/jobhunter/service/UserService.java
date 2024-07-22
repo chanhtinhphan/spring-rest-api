@@ -3,6 +3,7 @@ package vn.hoidanit.jobhunter.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import vn.hoidanit.jobhunter.domain.Company;
 import vn.hoidanit.jobhunter.domain.User;
 
 import org.springframework.stereotype.Service;
@@ -11,25 +12,34 @@ import vn.hoidanit.jobhunter.domain.dto.response.ResCreateUserDTO;
 import vn.hoidanit.jobhunter.domain.dto.response.ResFetchUserDTO;
 import vn.hoidanit.jobhunter.domain.dto.response.ResUpdateUserDTO;
 import vn.hoidanit.jobhunter.domain.dto.response.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.repository.CompanyRepository;
 import vn.hoidanit.jobhunter.repository.UserRepository;
 import vn.hoidanit.jobhunter.util.error.IdNotFoundException;
 import vn.hoidanit.jobhunter.util.error.UserExistedException;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final CompanyRepository companyRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, CompanyRepository companyRepository) {
         this.userRepository = userRepository;
+        this.companyRepository = companyRepository;
     }
 
     public ResCreateUserDTO handleCreateuser(User user) throws UserExistedException {
         if (this.userRepository.findByEmail(user.getEmail()) != null) {
             throw new UserExistedException("User has exsisted in db");
         }
+
+        if (user.getCompany() != null) {
+            user.setCompany(this.companyRepository.findById(user.getCompany().getId()).orElse(null));
+        }
+
         User savedUser = this.userRepository.save(user);
         ResCreateUserDTO res = new ResCreateUserDTO();
         res.setId(savedUser.getId());
@@ -39,6 +49,12 @@ public class UserService {
         res.setGender(savedUser.getGender());
         res.setEmail(savedUser.getEmail());
         res.setCreatedAt(savedUser.getCreatedAt());
+        if (savedUser.getCompany() != null) {
+            ResCreateUserDTO.Company resCompany = new ResCreateUserDTO.Company();
+            resCompany.setId(savedUser.getCompany().getId());
+            resCompany.setName(savedUser.getCompany().getName());
+            res.setCompany(resCompany);
+        }
         return res;
     }
 
@@ -59,13 +75,19 @@ public class UserService {
         res.setAge(user.getAge());
         res.setUpdatedAt(user.getUpdatedAt());
         res.setCreatedAt(user.getCreatedAt());
+        if (user.getCompany() != null) {
+            ResCreateUserDTO.Company resCompany = new ResCreateUserDTO.Company();
+            resCompany.setId(user.getCompany().getId());
+            resCompany.setName(user.getCompany().getName());
+            res.setCompany(resCompany);
+        }
         return res;
     }
 
     public ResultPaginationDTO handeGetAllUser(Specification<User> specification, Pageable pageable) {
         Page<User> pageUser = this.userRepository.findAll(specification, pageable);
         ResultPaginationDTO result = new ResultPaginationDTO();
-        ResultPaginationDTO.Meta meta = new  ResultPaginationDTO.Meta();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
 
         meta.setPage(pageable.getPageNumber() + 1);
         meta.setPageSize(pageable.getPageSize());
@@ -85,8 +107,15 @@ public class UserService {
                         user.getGender(),
                         user.getAddress(),
                         user.getCreatedAt(),
-                        user.getUpdatedAt()
+                        user.getUpdatedAt(),
+                        new ResCreateUserDTO.Company(
+                                user.getCompany() != null ? user.getCompany().getId() : 0,
+                                user.getCompany() != null ? user.getCompany().getName() : null
+                        )
                 )).collect(Collectors.toList());
+
+//        List<ResFetchUserDTO> listRes = new LinkedList<>();
+//        List<User> listUser = pageUser.getContent();
 //        for (User user : listUser) {
 //            ResFetchUserDTO res = new ResFetchUserDTO();
 //            res.setId(user.getId());
@@ -97,6 +126,14 @@ public class UserService {
 //            res.setAge(user.getAge());
 //            res.setUpdatedAt(user.getUpdatedAt());
 //            res.setCreatedAt(user.getCreatedAt());
+//            if (user.getCompany() != null) {
+//                res.setCompany(
+//                        new ResCreateUserDTO.Company(
+//                                user.getCompany().getId(),
+//                                user.getCompany().getName()
+//                        )
+//                );
+//            }
 //            listRes.add(res);
 //        }
         result.setResult(listRes);
@@ -114,6 +151,8 @@ public class UserService {
         currentUser.setGender(user.getGender());
         currentUser.setAddress(user.getAddress());
         currentUser.setAge(user.getAge());
+        currentUser.setCompany(this.companyRepository.findById(user.getCompany().getId()).orElse(null));
+
         User updatedUser = this.userRepository.save(currentUser);
         ResUpdateUserDTO res = new ResUpdateUserDTO();
         res.setId(updatedUser.getId());
@@ -122,8 +161,13 @@ public class UserService {
         res.setAddress(updatedUser.getAddress());
         res.setAge(updatedUser.getAge());
         res.setUpdatedAt(updatedUser.getUpdatedAt());
+        if (currentUser.getCompany() != null) {
+            ResUpdateUserDTO.Company resCompany = new ResUpdateUserDTO.Company();
+            resCompany.setId(currentUser.getCompany().getId());
+            resCompany.setName(currentUser.getCompany().getName());
+            res.setCompany(resCompany);
+        }
         return res;
-
     }
 
     public void updateUserToken(String token, String email) {

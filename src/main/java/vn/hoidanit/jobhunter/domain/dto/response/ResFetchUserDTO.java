@@ -20,4 +20,13 @@ public class ResFetchUserDTO {
     private String address;
     private Instant createdAt;
     private Instant updatedAt;
+    private ResCreateUserDTO.Company company;
+
+    @Getter
+    @Setter
+    public static  class Company{
+        private long id;
+        private String name;
+    }
+
 }
