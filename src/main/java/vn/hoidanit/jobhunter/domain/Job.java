@@ -1,40 +1,48 @@
 package vn.hoidanit.jobhunter.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
+import vn.hoidanit.jobhunter.util.constant.LevelEnum;
 
 import java.time.Instant;
 import java.util.List;
 
 @Entity
-@Table(name = "companies")
+@Table(name = "jobs")
 @Getter
 @Setter
-public class Company {
+public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotBlank(message = "Name of company can't be emty")
     private String name;
+    private String location;
+    private double salary;
+    private int quantity;
+    @Enumerated(EnumType.STRING)
+    private LevelEnum level;
     @Column(columnDefinition = "MEDIUMTEXT")
     private String description;
-    private String address;
-    private String logo;
+    private Instant startDate;
+    private Instant endDate;
+    private boolean isActive;
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
     private String updatedBy;
-    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
+    @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnore
-    List<User> users;
-    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
-    @JsonIgnore
-    List<Job> jobs;
+    @JoinTable(name = "job_skill", joinColumns = @JoinColumn(name = "job_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    private List<Skill> skills;
+
 
     @PrePersist
     public void handleBeforeCreate() {
@@ -49,4 +57,5 @@ public class Company {
                 SecurityUtil.getCurrentUserLogin().get() : "";
         this.updatedAt = Instant.now();
     }
+
 }
