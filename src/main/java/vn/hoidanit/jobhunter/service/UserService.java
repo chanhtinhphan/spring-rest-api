@@ -7,13 +7,14 @@ import vn.hoidanit.jobhunter.domain.User;
 
 import org.springframework.stereotype.Service;
 
-import vn.hoidanit.jobhunter.domain.dto.*;
+import vn.hoidanit.jobhunter.domain.dto.response.ResCreateUserDTO;
+import vn.hoidanit.jobhunter.domain.dto.response.ResFetchUserDTO;
+import vn.hoidanit.jobhunter.domain.dto.response.ResUpdateUserDTO;
+import vn.hoidanit.jobhunter.domain.dto.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.UserRepository;
 import vn.hoidanit.jobhunter.util.error.IdNotFoundException;
 import vn.hoidanit.jobhunter.util.error.UserExistedException;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
