@@ -15,7 +15,7 @@ import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 import vn.hoidanit.jobhunter.util.error.ExistedException;
 import vn.hoidanit.jobhunter.util.error.IdNotFoundException;
 
-@Controller
+@RestController
 @RequestMapping("/api/v1/skills")
 public class SkillController {
     private final SkillService skillService;

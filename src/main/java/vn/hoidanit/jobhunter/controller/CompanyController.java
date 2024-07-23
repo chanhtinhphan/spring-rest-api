@@ -13,7 +13,7 @@ import vn.hoidanit.jobhunter.domain.dto.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.CompanyService;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 
-@Controller
+@RestController
 @RequestMapping("/api/v1/companies")
 public class CompanyController {
     private final CompanyService companyService;

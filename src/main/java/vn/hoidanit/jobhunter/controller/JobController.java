@@ -16,7 +16,7 @@ import vn.hoidanit.jobhunter.service.JobService;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 import vn.hoidanit.jobhunter.util.error.IdNotFoundException;
 
-@Controller
+@RestController
 @RequestMapping("api/v1/jobs")
 public class JobController {
     private final JobService jobService;
