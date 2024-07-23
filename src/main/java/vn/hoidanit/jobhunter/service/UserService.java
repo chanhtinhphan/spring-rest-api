@@ -3,18 +3,16 @@ package vn.hoidanit.jobhunter.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import vn.hoidanit.jobhunter.domain.User;
-
 import org.springframework.stereotype.Service;
-
+import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.dto.response.ResCreateUserDTO;
 import vn.hoidanit.jobhunter.domain.dto.response.ResFetchUserDTO;
 import vn.hoidanit.jobhunter.domain.dto.response.ResUpdateUserDTO;
 import vn.hoidanit.jobhunter.domain.dto.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.CompanyRepository;
 import vn.hoidanit.jobhunter.repository.UserRepository;
+import vn.hoidanit.jobhunter.util.error.ExistedException;
 import vn.hoidanit.jobhunter.util.error.IdNotFoundException;
-import vn.hoidanit.jobhunter.util.error.UserExistedException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,9 +27,9 @@ public class UserService {
         this.companyRepository = companyRepository;
     }
 
-    public ResCreateUserDTO handleCreateuser(User user) throws UserExistedException {
+    public ResCreateUserDTO handleCreateuser(User user) throws ExistedException {
         if (this.userRepository.findByEmail(user.getEmail()) != null) {
-            throw new UserExistedException("User has exsisted in db");
+            throw new ExistedException("User has exsisted in db");
         }
 
         if (user.getCompany() != null) {

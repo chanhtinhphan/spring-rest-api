@@ -22,7 +22,7 @@ public class GlobalException {
     @ExceptionHandler(value = {
             UsernameNotFoundException.class,
             BadCredentialsException.class,
-            UserExistedException.class,
+            ExistedException.class,
             IdNotFoundException.class,
             NoResourceFoundException.class,
             MissingRequestCookieException.class

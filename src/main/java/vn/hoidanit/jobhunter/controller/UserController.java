@@ -13,7 +13,7 @@ import vn.hoidanit.jobhunter.domain.dto.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 import vn.hoidanit.jobhunter.util.error.IdNotFoundException;
-import vn.hoidanit.jobhunter.util.error.UserExistedException;
+import vn.hoidanit.jobhunter.util.error.ExistedException;
 import vn.hoidanit.jobhunter.domain.User;
 
 import org.springframework.http.HttpStatus;
@@ -33,7 +33,7 @@ public class UserController {
 
     @PostMapping
     @ApiMessage("Create a new user")
-    public ResponseEntity<ResCreateUserDTO> create(@RequestBody @Valid User user) throws UserExistedException {
+    public ResponseEntity<ResCreateUserDTO> create(@RequestBody @Valid User user) throws ExistedException {
         String hashPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashPassword);
         ResCreateUserDTO newUser = this.userService.handleCreateuser(user);
@@ -58,15 +58,7 @@ public class UserController {
     public ResponseEntity<ResultPaginationDTO> getAll(
             @Filter Specification<User> specification,
             Pageable pageable
-//            @RequestParam("current") Optional<String> currentOptional,
-//            @RequestParam("pageSize") Optional<String> pageSizeOptional
     ) {
-//        String sCurrent = currentOptional.orElse("");
-//        String sPageSize = pageSizeOptional.orElse("");
-//
-//        int currentPage = Integer.parseInt(sCurrent) - 1;
-//        int pageSize = Integer.parseInt(sPageSize);
-//        Pageable pageable = PageRequest.of(currentPage, pageSize);
         ResultPaginationDTO listUser = this.userService.handeGetAllUser(specification, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(listUser);
     }
