@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import vn.hoidanit.jobhunter.domain.dto.response.RestResponse;
+import vn.hoidanit.jobhunter.domain.response.RestResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,15 +25,18 @@ public class GlobalException {
             ExistedException.class,
             IdNotFoundException.class,
             NoResourceFoundException.class,
-            MissingRequestCookieException.class
+            MissingRequestCookieException.class,
+            FileUploadException.class
     })
     public ResponseEntity<RestResponse<Object>> handleIdException(Exception ex) {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError(ex.getMessage());
-        if(ex instanceof NoResourceFoundException){
+        if (ex instanceof NoResourceFoundException) {
             res.setMessage("404 NOT FOUND");
-        }else{
+        } else if (ex instanceof FileUploadException) {
+            res.setMessage("Upload file exception...");
+        } else {
             res.setMessage("Exception occurs...");
         }
 
