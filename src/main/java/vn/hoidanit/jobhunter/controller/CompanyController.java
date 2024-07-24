@@ -11,6 +11,9 @@ import vn.hoidanit.jobhunter.domain.Company;
 import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.CompanyService;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
+import vn.hoidanit.jobhunter.util.error.IdNotFoundException;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/companies")
@@ -33,20 +36,29 @@ public class CompanyController {
     }
 
     @PostMapping
+    @ApiMessage("create companies")
     public ResponseEntity<Company> create(@RequestBody @Valid Company company) {
         Company newCompany = this.companyService.handleCreateCompany(company);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCompany);
     }
 
     @PutMapping
+    @ApiMessage("update companies")
     public ResponseEntity<Company> update(@RequestBody @Valid Company company) {
         return ResponseEntity.status(HttpStatus.OK).body(this.companyService.handleUpdateCompany(company));
     }
 
     @DeleteMapping("/{id}")
+    @ApiMessage("delete companies by id")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         this.companyService.handleDeleteCompany(id);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("/{id}")
+    @ApiMessage("fetch company by id")
+    public ResponseEntity<Company> fetchCompanyById(@PathVariable("id") Long id) throws IdNotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(this.companyService.handleGetCompanyById(id));
     }
 
 

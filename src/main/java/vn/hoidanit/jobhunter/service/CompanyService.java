@@ -8,6 +8,7 @@ import vn.hoidanit.jobhunter.domain.Company;
 import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.CompanyRepository;
 import vn.hoidanit.jobhunter.repository.UserRepository;
+import vn.hoidanit.jobhunter.util.error.IdNotFoundException;
 
 import java.util.Optional;
 
@@ -61,5 +62,11 @@ public class CompanyService {
                     .forEach((user -> this.userRepository.deleteById(user.getId())));
         }
         this.companyRepository.deleteById(id);
+    }
+
+    public Company handleGetCompanyById(Long id) throws IdNotFoundException {
+        Company company = this.companyRepository.findById(id).orElse(null);
+        if (company == null) throw new IdNotFoundException("Id not found");
+        return company;
     }
 }
