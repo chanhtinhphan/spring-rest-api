@@ -4,12 +4,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import vn.hoidanit.jobhunter.domain.Company;
+import vn.hoidanit.jobhunter.domain.Role;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.response.ResCreateUserDTO;
 import vn.hoidanit.jobhunter.domain.response.ResFetchUserDTO;
 import vn.hoidanit.jobhunter.domain.response.ResUpdateUserDTO;
 import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.CompanyRepository;
+import vn.hoidanit.jobhunter.repository.RoleRepository;
 import vn.hoidanit.jobhunter.repository.UserRepository;
 import vn.hoidanit.jobhunter.util.error.ExistedException;
 import vn.hoidanit.jobhunter.util.error.IdNotFoundException;
@@ -21,10 +24,12 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
+    private final RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository, CompanyRepository companyRepository) {
+    public UserService(UserRepository userRepository, CompanyRepository companyRepository, RoleService roleService, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.companyRepository = companyRepository;
+        this.roleRepository = roleRepository;
     }
 
     public ResCreateUserDTO handleCreateuser(User user) throws ExistedException {
@@ -33,9 +38,13 @@ public class UserService {
         }
 
         if (user.getCompany() != null) {
-            user.setCompany(this.companyRepository.findById(user.getCompany().getId()).orElse(null));
+            Company companyDB = this.companyRepository.findById(user.getCompany().getId()).orElse(null);
+            user.setCompany(companyDB);
         }
-
+        if (user.getRole() != null) {
+            Role roleDB = this.roleRepository.findById(user.getRole().getId()).orElse(null);
+            user.setRole(roleDB);
+        }
         User savedUser = this.userRepository.save(user);
         ResCreateUserDTO res = new ResCreateUserDTO();
         res.setId(savedUser.getId());
@@ -71,7 +80,7 @@ public class UserService {
         res.setUpdatedAt(user.getUpdatedAt());
         res.setCreatedAt(user.getCreatedAt());
         if (user.getCompany() != null) {
-            ResCreateUserDTO.Company resCompany = new ResCreateUserDTO.Company();
+            ResFetchUserDTO.Company resCompany = new ResFetchUserDTO.Company();
             resCompany.setId(user.getCompany().getId());
             resCompany.setName(user.getCompany().getName());
             res.setCompany(resCompany);
@@ -93,44 +102,30 @@ public class UserService {
         result.setMeta(meta);
 
         List<ResFetchUserDTO> listRes = pageUser.getContent().stream()
-                .map(user -> new ResFetchUserDTO(
-                        user.getId(),
-                        user.getName(),
-                        user.getEmail(),
-                        user.getAge(),
-                        user.getGender(),
-                        user.getAddress(),
-                        user.getCreatedAt(),
-                        user.getUpdatedAt(),
-                        new ResCreateUserDTO.Company(
-                                user.getCompany() != null ? user.getCompany().getId() : 0,
-                                user.getCompany() != null ? user.getCompany().getName() : null)))
+                .map(user -> convertToFetchDTO(user))
                 .collect(Collectors.toList());
 
-        // List<ResFetchUserDTO> listRes = new LinkedList<>();
-        // List<User> listUser = pageUser.getContent();
-        // for (User user : listUser) {
-        // ResFetchUserDTO res = new ResFetchUserDTO();
-        // res.setId(user.getId());
-        // res.setEmail(user.getEmail());
-        // res.setName(user.getName());
-        // res.setGender(user.getGender());
-        // res.setAddress(user.getAddress());
-        // res.setAge(user.getAge());
-        // res.setUpdatedAt(user.getUpdatedAt());
-        // res.setCreatedAt(user.getCreatedAt());
-        // if (user.getCompany() != null) {
-        // res.setCompany(
-        // new ResCreateUserDTO.Company(
-        // user.getCompany().getId(),
-        // user.getCompany().getName()
-        // )
-        // );
-        // }
-        // listRes.add(res);
-        // }
         result.setResult(listRes);
         return result;
+    }
+
+    private static ResFetchUserDTO convertToFetchDTO(User user) {
+        return new ResFetchUserDTO(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getAge(),
+                user.getGender(),
+                user.getAddress(),
+                user.getCreatedAt(),
+                user.getUpdatedAt(),
+                new ResFetchUserDTO.Company(
+                        user.getCompany() != null ? user.getCompany().getId() : 0,
+                        user.getCompany() != null ? user.getCompany().getName() : null),
+                new ResFetchUserDTO.Role(
+                        user.getRole() != null ? user.getRole().getId() : 0,
+                        user.getRole() != null ? user.getRole().getName() : null)
+        );
     }
 
     public User handleGetUserByUsername(String username) {
@@ -144,7 +139,16 @@ public class UserService {
         currentUser.setGender(user.getGender());
         currentUser.setAddress(user.getAddress());
         currentUser.setAge(user.getAge());
-        currentUser.setCompany(this.companyRepository.findById(user.getCompany().getId()).orElse(null));
+
+
+        if (user.getCompany() != null) {
+            Company companyDB = this.companyRepository.findById(user.getCompany().getId()).orElse(null);
+            currentUser.setCompany(companyDB);
+        }
+        if (user.getRole() != null) {
+            Role roleDB = this.roleRepository.findById(user.getRole().getId()).orElse(null);
+            currentUser.setRole(roleDB);
+        }
 
         User updatedUser = this.userRepository.save(currentUser);
         ResUpdateUserDTO res = new ResUpdateUserDTO();

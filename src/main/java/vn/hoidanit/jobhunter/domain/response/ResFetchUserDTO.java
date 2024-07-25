@@ -7,6 +7,7 @@ import lombok.Setter;
 import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 
 import java.time.Instant;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,13 +21,26 @@ public class ResFetchUserDTO {
     private String address;
     private Instant createdAt;
     private Instant updatedAt;
-    private ResCreateUserDTO.Company company;
+    private Company company;
+    private Role role;
 
     @Getter
     @Setter
-    public static  class Company{
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Company {
         private long id;
         private String name;
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Role {
+        private long id;
+        private String name;
+    }
+
 
 }

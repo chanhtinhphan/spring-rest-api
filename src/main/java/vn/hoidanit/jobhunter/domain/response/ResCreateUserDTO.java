@@ -7,6 +7,7 @@ import lombok.Setter;
 import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 
 import java.time.Instant;
+
 @Getter
 @Setter
 public class ResCreateUserDTO {
@@ -23,8 +24,10 @@ public class ResCreateUserDTO {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static  class Company{
+    public static class Company {
         private long id;
         private String name;
     }
+
+
 }

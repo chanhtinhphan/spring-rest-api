@@ -1,45 +1,42 @@
 package vn.hoidanit.jobhunter.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
-import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "roles")
 @Getter
 @Setter
-public class User {
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
+    @NotBlank(message = "name can't be emty")
     private String name;
-    @NotBlank(message = "email can't be emty")
-    private String email;
-    @NotBlank(message = "password can't be emty")
-    private String password;
-    private int age;
-    @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
-    private String address;
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String refreshToken;
+    private String description;
+    private boolean active;
     private Instant createdAt;
     private Instant updatedAt;
     private String createdBy;
     private String updatedBy;
 
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "permission_role", joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    @JsonIgnoreProperties(value = {"roles"})
+    private List<Permission> permissions;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    @JsonIgnore
+    List<User> users;
 
 
     @PrePersist
