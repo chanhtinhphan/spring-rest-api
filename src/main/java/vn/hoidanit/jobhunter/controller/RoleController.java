@@ -43,4 +43,9 @@ public class RoleController {
         this.roleService.handleDeleteRole(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Role> getById(@PathVariable("id") Long id) throws IdNotFoundException {
+        return ResponseEntity.status(HttpStatus.OK).body(this.roleService.fetchById(id));
+    }
 }

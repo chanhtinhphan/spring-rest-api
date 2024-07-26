@@ -29,8 +29,9 @@ public class PermissionService {
         if (!this.permissionRepository.existsById(permission.getId()))
             throw new IdNotFoundException("Permission id not found");
         if (this.permissionRepository.existsByModuleAndApiPathAndMethod(
-                permission.getModule(), permission.getApiPath(), permission.getMethod()
-        )) throw new ExistedException("permission have been existed");
+                permission.getModule(), permission.getApiPath(), permission.getMethod())
+                && this.permissionRepository.findById(permission.getId()).get().getName().equals(permission.getName())
+        ) throw new ExistedException("permission have been existed");
         Permission permissionInDB = this.permissionRepository.findById(permission.getId()).get();
         permissionInDB.setName(permission.getName());
         permissionInDB.setApiPath(permission.getApiPath());

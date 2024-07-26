@@ -56,12 +56,13 @@ public class RoleService {
         }
         return this.roleRepository.save(roleInDB);
     }
-    public ResultPaginationDTO handleGetRolePage(Specification<Role> specification, Pageable pageable){
-        Page<Role> rolePage = this.roleRepository.findAll(specification,pageable);
-        ResultPaginationDTO result = new ResultPaginationDTO();
-        ResultPaginationDTO.Meta meta= new ResultPaginationDTO.Meta();
 
-        meta.setPage(pageable.getPageNumber()+1);
+    public ResultPaginationDTO handleGetRolePage(Specification<Role> specification, Pageable pageable) {
+        Page<Role> rolePage = this.roleRepository.findAll(specification, pageable);
+        ResultPaginationDTO result = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
+
+        meta.setPage(pageable.getPageNumber() + 1);
         meta.setPageSize(pageable.getPageSize());
         meta.setPages(rolePage.getTotalPages());
         meta.setTotal(rolePage.getTotalElements());
@@ -71,10 +72,16 @@ public class RoleService {
         return result;
     }
 
-    public  void handleDeleteRole(Long id) throws IdNotFoundException{
+    public void handleDeleteRole(Long id) throws IdNotFoundException {
         if (!this.roleRepository.existsById(id))
             throw new IdNotFoundException("role not found");
         this.roleRepository.deleteById(id);
+    }
+
+    public Role fetchById(Long id) throws IdNotFoundException {
+        Role role = roleRepository.findById(id).orElse(null);
+        if (role == null) throw new IdNotFoundException("Role not found");
+        return role;
     }
 
 }
