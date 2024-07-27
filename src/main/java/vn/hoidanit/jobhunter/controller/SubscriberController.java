@@ -10,7 +10,7 @@ import vn.hoidanit.jobhunter.util.error.ExistedException;
 import vn.hoidanit.jobhunter.util.error.IdNotFoundException;
 
 @RestController
-@RequestMapping("/api/v1/subsciber")
+@RequestMapping("/api/v1/subscribers")
 public class SubscriberController {
     private final SubscriberService subscriberService;
 

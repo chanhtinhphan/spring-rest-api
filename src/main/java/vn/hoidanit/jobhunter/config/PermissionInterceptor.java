@@ -40,7 +40,8 @@ public class PermissionInterceptor implements HandlerInterceptor {
                 if (role != null) {
                     List<Permission> permissions = role.getPermissions();
                     boolean isAllowed = permissions.stream()
-                            .anyMatch(item -> item.getApiPath().equals(path) && item.getMethod().equals(httpMethod));
+                            .anyMatch(item -> item.getApiPath().equals(requestURI)
+                                    && item.getMethod().equals(httpMethod));
                     if (isAllowed == false) throw new PermissionException("can't access this api");
                 } else {
                     throw new PermissionException("can't access this api");
