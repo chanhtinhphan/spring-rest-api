@@ -57,8 +57,11 @@ public class SkillService {
     public void handleDeleteSkill(Long id) throws IdNotFoundException {
         Skill currentSkill = this.skillRepository.findById(id).orElse(null);
         if (currentSkill == null) throw new IdNotFoundException("skill id not found");
-            currentSkill.getJobs().forEach(job -> job.getSkills().remove(currentSkill));
-            this.skillRepository.delete(currentSkill);
+        currentSkill.getJobs().forEach(job -> job.getSkills().remove(currentSkill));
+
+        currentSkill.getSubscribers().forEach(subs -> subs.getSkills().remove(currentSkill));
+
+        this.skillRepository.delete(currentSkill);
     }
 
 }

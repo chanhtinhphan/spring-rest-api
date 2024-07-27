@@ -26,7 +26,9 @@ public class GlobalException {
             IdNotFoundException.class,
             NoResourceFoundException.class,
             MissingRequestCookieException.class,
-            FileUploadException.class
+            FileUploadException.class,
+            IdInvalidException.class,
+            PermissionException.class
     })
     public ResponseEntity<RestResponse<Object>> handleIdException(Exception ex) {
         RestResponse<Object> res = new RestResponse<Object>();
@@ -36,6 +38,10 @@ public class GlobalException {
             res.setMessage("404 NOT FOUND");
         } else if (ex instanceof FileUploadException) {
             res.setMessage("Upload file exception...");
+        } else if (ex instanceof PermissionException) {
+            res.setStatusCode(HttpStatus.FORBIDDEN.value());
+            res.setMessage("Forbidden");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
         } else {
             res.setMessage("Exception occurs...");
         }
